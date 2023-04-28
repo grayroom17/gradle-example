@@ -8,3 +8,8 @@
  */
 
 rootProject.name = 'gradle-example'
+
+println ""
+println "current settings file: ${toString()}"
+println "current settings file dir: ${settings.getSettingsDir()}"
+println "gradle hasCode: ${gradle.hashCode()}"
