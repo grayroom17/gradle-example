@@ -10,3 +10,42 @@ println ""
 println "Configuration phase"
 println "Gradle hash code: ${gradle.hashCode()}"
 println "Project hash code: ${rootProject.hashCode()}"
+
+//task("hello")
+
+//1
+/*
+def helloTask = tasks.findByName("hello")
+helloTask.group = "custom group"
+helloTask.description = "This is the Hello task"
+*/
+
+//2
+/*
+hello.group = "custom group"
+hello.description = "This is the Hello task"
+*/
+
+//3
+/*
+hello {
+    println "Configuration phase. Hello task"
+    group = "custom group"
+    description = "This is the Hello task"
+}
+*/
+
+//4
+/*
+task hello {
+    println "Configuration phase. Hello task"
+    group = "custom group"
+    description = "This is the Hello task"
+}
+*/
+
+//5
+task hello (group: "custom group", description: "This is the Hello task"){
+    println "Configuration phase. Hello task"
+    println "Group: $group, description: $description"
+}
