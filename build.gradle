@@ -112,9 +112,24 @@ task fivethTask {
     }
 }
 task eighthTask {
+    group = "custom group"
     dependsOn([fivethTask, sixthTask, seventhTask])
     doLast {
         println "Eighth task"
+    }
+}
+
+//noinspection GrDeprecatedAPIUsage
+gradle.taskGraph.beforeTask { Task task ->
+    if (task.group == "custom group") {
+        println "Before task callback"
+    }
+}
+
+//noinspection GrDeprecatedAPIUsage
+gradle.taskGraph.afterTask { Task task ->
+    if (task.group == "custom group") {
+        println "After task callback"
     }
 }
 
