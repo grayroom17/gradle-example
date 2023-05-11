@@ -45,7 +45,17 @@ task hello {
 */
 
 //5
-task hello (group: "custom group", description: "This is the Hello task"){
+task hello(group: "custom group", description: "This is the Hello task") {
+    doLast {
+        println "Second action"
+    }
+    doFirst {
+        println "First action"
+    }
+    doLast {
+        println "Third action"
+    }
     println "Configuration phase. Hello task"
-    println "Group: $group, description: $description"
+    println "Group: $group, description: $description, number of actions: $actions.size()"
+    println "Task path: $path"
 }
