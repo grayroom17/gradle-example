@@ -59,3 +59,62 @@ task hello(group: "custom group", description: "This is the Hello task") {
     println "Group: $group, description: $description, number of actions: $actions.size()"
     println "Task path: $path"
 }
+
+task firstTask {
+    doLast {
+        println "First task"
+    }
+}
+
+task thirdTask {
+    doLast {
+        println "Third task"
+    }
+}
+
+task secondTask {
+    dependsOn(firstTask)
+    finalizedBy(thirdTask)
+    doLast {
+        println "Second task"
+    }
+}
+
+task forthTask {
+    dependsOn(secondTask)
+    doLast {
+        println "Forth task"
+    }
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+    println "----- Graph: "
+    graph.allTasks.each {
+        println "${it.name}"
+    }
+}
+
+task seventhTask {
+    doLast {
+        println "Seventh task"
+    }
+}
+task sixthTask {
+    mustRunAfter(seventhTask)
+    doLast {
+        println "Sixth task"
+    }
+}
+task fivethTask {
+    mustRunAfter(sixthTask)
+    doLast {
+        println "Fiveth task"
+    }
+}
+task eighthTask {
+    dependsOn([fivethTask, sixthTask, seventhTask])
+    doLast {
+        println "Eighth task"
+    }
+}
+
