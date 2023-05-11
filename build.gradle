@@ -10,3 +10,126 @@ println ""
 println "Configuration phase"
 println "Gradle hash code: ${gradle.hashCode()}"
 println "Project hash code: ${rootProject.hashCode()}"
+
+//task("hello")
+
+//1
+/*
+def helloTask = tasks.findByName("hello")
+helloTask.group = "custom group"
+helloTask.description = "This is the Hello task"
+*/
+
+//2
+/*
+hello.group = "custom group"
+hello.description = "This is the Hello task"
+*/
+
+//3
+/*
+hello {
+    println "Configuration phase. Hello task"
+    group = "custom group"
+    description = "This is the Hello task"
+}
+*/
+
+//4
+/*
+task hello {
+    println "Configuration phase. Hello task"
+    group = "custom group"
+    description = "This is the Hello task"
+}
+*/
+
+//5
+task hello(group: "custom group", description: "This is the Hello task") {
+    doLast {
+        println "Second action"
+    }
+    doFirst {
+        println "First action"
+    }
+    doLast {
+        println "Third action"
+    }
+    println "Configuration phase. Hello task"
+    println "Group: $group, description: $description, number of actions: $actions.size()"
+    println "Task path: $path"
+}
+
+task firstTask {
+    doLast {
+        println "First task"
+    }
+}
+
+task thirdTask {
+    doLast {
+        println "Third task"
+    }
+}
+
+task secondTask {
+    dependsOn(firstTask)
+    finalizedBy(thirdTask)
+    doLast {
+        println "Second task"
+    }
+}
+
+task forthTask {
+    dependsOn(secondTask)
+    doLast {
+        println "Forth task"
+    }
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+    println "----- Graph: "
+    graph.allTasks.each {
+        println "${it.name}"
+    }
+}
+
+task seventhTask {
+    doLast {
+        println "Seventh task"
+    }
+}
+task sixthTask {
+    mustRunAfter(seventhTask)
+    doLast {
+        println "Sixth task"
+    }
+}
+task fivethTask {
+    mustRunAfter(sixthTask)
+    doLast {
+        println "Fiveth task"
+    }
+}
+task eighthTask {
+    group = "custom group"
+    dependsOn([fivethTask, sixthTask, seventhTask])
+    doLast {
+        println "Eighth task"
+    }
+}
+
+//noinspection GrDeprecatedAPIUsage
+gradle.taskGraph.beforeTask { Task task ->
+    if (task.group == "custom group") {
+        println "Before task callback"
+    }
+}
+
+//noinspection GrDeprecatedAPIUsage
+gradle.taskGraph.afterTask { Task task ->
+    if (task.group == "custom group") {
+        println "After task callback"
+    }
+}
+
