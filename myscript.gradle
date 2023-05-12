@@ -1,0 +1,5 @@
+task taskFromScript {
+    doLast {
+        println "Run task from script"
+    }
+}
