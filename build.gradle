@@ -5,6 +5,13 @@
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/8.0/samples
  */
 
+//подключение Java плагина
+plugins {
+    id 'java'
+    //теперь можно выполнить команду gradle tasks и посмотреть все доступные таски
+    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
+}
+
 //через блок ext можно добавлять настройки (properties) gradle
 ext {
     javaVersion = 17
@@ -150,6 +157,8 @@ gradle.taskGraph.afterTask { Task task ->
 apply from: 'myscript.gradle'
 
 //Плагин
+
+//Используем таску из плагина
 class MyPlugin implements Plugin<Project> {
 
     @Override
@@ -164,6 +173,6 @@ class MyPlugin implements Plugin<Project> {
     }
 }
 
-//Используем таску из плагина
 apply plugin: MyPlugin
+
 
