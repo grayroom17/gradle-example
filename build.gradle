@@ -5,6 +5,26 @@
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/8.0/samples
  */
 
+//подключение Java плагина
+plugins {
+    id 'java'
+    //теперь можно выполнить команду gradle tasks и посмотреть все доступные таски
+    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
+}
+
+//через блок ext можно добавлять настройки (properties) gradle
+ext {
+    javaVersion = 17
+}
+
+println ""
+
+//способы получения gradle properties
+println javaVersion
+println ext.javaVersion
+println project.ext.javaVersion
+println project.javaVersion
+
 println ""
 
 println "Configuration phase"
@@ -132,4 +152,27 @@ gradle.taskGraph.afterTask { Task task ->
         println "After task callback"
     }
 }
+
+//Используем таску из скрипта
+apply from: 'myscript.gradle'
+
+//Плагин
+
+//Используем таску из плагина
+class MyPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project target) {
+        def map = [description: "plugin tasks", group: "plugin tasks"]
+
+        target.task(map, "plugintask") {
+            doLast {
+                println "run plugin task"
+            }
+        }
+    }
+}
+
+apply plugin: MyPlugin
+
 
