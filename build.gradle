@@ -12,6 +12,10 @@ plugins {
     //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
 }
 
+repositories {
+    mavenCentral()
+}
+
 sourceSets {
     main{
         java {
@@ -183,5 +187,8 @@ class MyPlugin implements Plugin<Project> {
 }
 
 apply plugin: MyPlugin
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+}
 
 
