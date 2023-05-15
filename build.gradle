@@ -12,6 +12,15 @@ plugins {
     //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
 }
 
+sourceSets {
+    main{
+        java {
+            srcDir "$buildDir/generated-sources/mapstruct"
+        }
+    }
+
+}
+
 //через блок ext можно добавлять настройки (properties) gradle
 ext {
     javaVersion = 17
