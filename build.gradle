@@ -16,6 +16,15 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    Configuration configurationImpl = getByName("implementation")
+
+    customConfiguration {
+        description = "custom configuration"
+    }
+    configurationImpl.extendsFrom(customConfiguration)
+}
+
 dependencies {
     // 1й способ добавить зависимости
     /*add("implementation",[group:  "org.junit.jupiter", name: "junit-jupiter", version: "5.9.2"])
@@ -26,12 +35,12 @@ dependencies {
     add("implementation", 'org.springframework:spring-webmvc:6.0.6')*/
 
     //3й способ добавить зависимости
-    implementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    implementation 'org.springframework:spring-webmvc:6.0.6'
+    customConfiguration 'org.springframework:spring-webmvc:6.0.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 }
 
 sourceSets {
-    main{
+    main {
         java {
             srcDir "$buildDir/generated-sources/mapstruct"
         }
@@ -200,6 +209,7 @@ class MyPlugin implements Plugin<Project> {
         }
     }
 }
+
 apply plugin: MyPlugin
 
 
