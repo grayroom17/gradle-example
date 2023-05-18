@@ -70,6 +70,16 @@ dependencies {
             strictly '6.0.0'
         }
     }
+
+    //чтобы обеспечить совместимость различных зависимостей,
+    //можно внедрить зависимость целой платформы, в которой уже определены совместимые версии зависимостей.
+    //например org.springframework.boot:spring-boot-dependencies
+    implementation platform('org.springframework.cloud:spring-cloud-commons-dependencies:4.0.1')
+
+    //теперь нет необходимости определять версии зависимостей. Т.к. они входят в зависимость внедренную выше,
+    //то и версии этих зависимостей будут браться оттуда же
+    implementation 'org.springframework.cloud:spring-cloud-commons'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
 }
 
 sourceSets {
