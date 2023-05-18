@@ -12,6 +12,85 @@ plugins {
     //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
 }
 
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    Configuration configurationImpl = getByName("implementation")
+
+    customConfiguration {
+        description = "custom configuration"
+    }
+    configurationImpl.extendsFrom(customConfiguration)
+
+    //чтобы переопределить стратегию выбора версии пересекающихся зависимостей
+    //нужно это явно указать в нужной конфигурации , либо во всех конфигурациях
+    //all { resolutionStrategy { force('.........') } }
+    all {
+        resolutionStrategy {
+            force('org.springframework:spring-web:6.0.0')
+        }
+    }
+
+}
+
+dependencies {
+    // 1й способ добавить зависимости
+    /*add("implementation",[group:  "org.junit.jupiter", name: "junit-jupiter", version: "5.9.2"])
+    add("implementation",[group:  "org.springframework", name: "spring-webmvc", version: "6.0.6"])*/
+
+    //2й способ добавить зависимости
+    /*    add("implementation","org.junit.jupiter:junit-jupiter:5.9.2")
+    add("implementation", 'org.springframework:spring-webmvc:6.0.6')*/
+
+    //3й способ добавить зависимости
+    customConfiguration 'org.springframework:spring-webmvc:6.0.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+
+    //исключаем транзитивную зависимость org.slf4j:slf4j-api из spring-data-jpa
+    implementation('org.springframework.data:spring-data-jpa:3.0.3') {
+        exclude(group: 'org.slf4j', module: 'slf4j-api')
+    }
+
+    //исключаем все транзитивные зависимости из spring-boot-test
+    implementation('org.springframework.boot:spring-boot-test:3.0.4') {
+        transitive(false)
+    }
+
+    //по умолчанию если явно подтянуть зависимость, которая уже есть в транзитивных зависимостях,
+    //то по умолчанию Gradle будет брать зависимость с более высокой версией
+    implementation 'org.springframework:spring-orm:6.0.0'
+    implementation 'org.springframework:spring-web:6.0.0'
+
+    //чтобы переопределить стратегию выбора версии пересекающихся зависимостей
+    //нужно в нужной Configuration сделать вызов {Configuration}.version.strictly({version}) и указать нужную версию
+    implementation('org.springframework:spring-tx') {
+        version {
+            strictly '6.0.0'
+        }
+    }
+
+    //чтобы обеспечить совместимость различных зависимостей,
+    //можно внедрить зависимость целой платформы, в которой уже определены совместимые версии зависимостей.
+    //например org.springframework.boot:spring-boot-dependencies
+    implementation platform('org.springframework.cloud:spring-cloud-commons-dependencies:4.0.1')
+
+    //теперь нет необходимости определять версии зависимостей. Т.к. они входят в зависимость внедренную выше,
+    //то и версии этих зависимостей будут браться оттуда же
+    implementation 'org.springframework.cloud:spring-cloud-commons'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated-sources/mapstruct"
+        }
+    }
+
+}
+
 //через блок ext можно добавлять настройки (properties) gradle
 ext {
     javaVersion = 17
@@ -159,6 +238,7 @@ apply from: 'myscript.gradle'
 //Плагин
 
 //Используем таску из плагина
+
 class MyPlugin implements Plugin<Project> {
 
     @Override
