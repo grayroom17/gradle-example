@@ -9,7 +9,7 @@
 plugins {
     id 'java'
     //теперь можно выполнить команду gradle tasks и посмотреть все доступные таски
-    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
+    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все тасок
 }
 
 repositories {
@@ -46,6 +46,7 @@ dependencies {
 
     //3й способ добавить зависимости
     customConfiguration 'org.springframework:spring-webmvc:6.0.6'
+    implementation 'org.springframework:spring-aop:6.0.6'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 
     //исключаем транзитивную зависимость org.slf4j:slf4j-api из spring-data-jpa
@@ -79,7 +80,6 @@ dependencies {
     //теперь нет необходимости определять версии зависимостей. Т.к. они входят в зависимость внедренную выше,
     //то и версии этих зависимостей будут браться оттуда же
     implementation 'org.springframework.cloud:spring-cloud-commons'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
 }
 
 sourceSets {
@@ -236,9 +236,6 @@ gradle.taskGraph.afterTask { Task task ->
 apply from: 'myscript.gradle'
 
 //Плагин
-
-//Используем таску из плагина
-
 class MyPlugin implements Plugin<Project> {
 
     @Override
@@ -253,6 +250,21 @@ class MyPlugin implements Plugin<Project> {
     }
 }
 
+//Используем таску из плагина
 apply plugin: MyPlugin
+
+//определяем формирование jar файла
+jar {
+    //указываем путь до главного исполняемого файла
+    manifest {
+        attributes "Main-Class": "com.gradle.example.HelloWorld"
+    }
+
+    //игнорируем дубликаты файлов в разных jar
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    //добавляем распакованные зависимости в jar
+    from (configurations.runtimeClasspath.files.collect {zipTree(it)} )
+}
 
 
