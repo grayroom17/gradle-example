@@ -5,11 +5,20 @@
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/8.0/samples
  */
 
-//подключение Java плагина
 plugins {
-    id 'java'
+    //подключение Java плагина
     //теперь можно выполнить команду gradle tasks и посмотреть все доступные таски
-    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все такок
+    //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все тасок
+    id 'java'
+
+    //подключаем плагин war, чтобы собирать war файлы
+    id 'war'
+
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -46,6 +55,7 @@ dependencies {
 
     //3й способ добавить зависимости
     customConfiguration 'org.springframework:spring-webmvc:6.0.6'
+    implementation 'org.springframework:spring-aop:6.0.6'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 
     //исключаем транзитивную зависимость org.slf4j:slf4j-api из spring-data-jpa
@@ -79,7 +89,8 @@ dependencies {
     //теперь нет необходимости определять версии зависимостей. Т.к. они входят в зависимость внедренную выше,
     //то и версии этих зависимостей будут браться оттуда же
     implementation 'org.springframework.cloud:spring-cloud-commons'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
+
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 }
 
 sourceSets {
@@ -236,9 +247,6 @@ gradle.taskGraph.afterTask { Task task ->
 apply from: 'myscript.gradle'
 
 //Плагин
-
-//Используем таску из плагина
-
 class MyPlugin implements Plugin<Project> {
 
     @Override
@@ -253,6 +261,43 @@ class MyPlugin implements Plugin<Project> {
     }
 }
 
+//Используем таску из плагина
 apply plugin: MyPlugin
 
+//определяем формирование jar файла
+jar {
+    //указываем путь до главного исполняемого файла
+    manifest {
 
+        def jarsPaths = configurations.runtimeClasspath.files.collect { "lib/$it.name" }
+        attributes 'Main-Class': 'com.gradle.example.HelloWorld',
+                'Class-Path': jarsPaths.join(" ")
+    }
+
+    //1й способ сформировать fat jar со всеми распакованными зависимостями
+    /*//игнорируем дубликаты файлов в разных jar
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    //добавляем распакованные зависимости в jar
+    from(configurations.runtimeClasspath.files.collect { zipTree(it) })*/
+}
+
+//2й способ сформировать jar без зависимостей. Все зависимости кладем в папку $buildDir/libs/lib
+task copyAllDependencies(type: Copy) {
+    from(configurations.runtimeClasspath.files)
+    into("$buildDir/libs/lib")
+}
+//и делаем таску jar зависимой от нашей таски
+jar.dependsOn copyAllDependencies
+
+war {
+    archiveBaseName = "hello"
+    archiveExtension = "war"
+}
+
+task deployTomcat(type: Copy) {
+    from(war.archiveFile.get())
+    into("C:/Program Files/Apache Software Foundation/Tomcat 10.1.9/webapps")
+}
+deployTomcat.dependsOn war
+assemble.dependsOn deployTomcat
