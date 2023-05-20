@@ -257,14 +257,24 @@ apply plugin: MyPlugin
 jar {
     //указываем путь до главного исполняемого файла
     manifest {
-        attributes "Main-Class": "com.gradle.example.HelloWorld"
+
+        def jarsPaths = configurations.runtimeClasspath.files.collect { "lib/$it.name" }
+        attributes 'Main-Class': 'com.gradle.example.HelloWorld',
+                'Class-Path': jarsPaths.join(" ")
     }
 
-    //игнорируем дубликаты файлов в разных jar
+    //1й способ сформировать fat jar со всеми распакованными зависимостями
+    /*//игнорируем дубликаты файлов в разных jar
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 
     //добавляем распакованные зависимости в jar
-    from (configurations.runtimeClasspath.files.collect {zipTree(it)} )
+    from(configurations.runtimeClasspath.files.collect { zipTree(it) })*/
 }
 
-
+//2й способ сформировать jar без зависимостей. Все зависимости кладем в папку $buildDir/libs/lib
+task copyAllDependencies(type: Copy) {
+    from(configurations.runtimeClasspath.files)
+    into("$buildDir/libs/lib")
+}
+//и делаем таску jar зависимой от нашей таски
+jar.dependsOn copyAllDependencies
