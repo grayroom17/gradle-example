@@ -5,11 +5,20 @@
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/8.0/samples
  */
 
-//подключение Java плагина
 plugins {
-    id 'java'
+    //подключение Java плагина
     //теперь можно выполнить команду gradle tasks и посмотреть все доступные таски
     //далее можно попробовать выполнить gradle build и посмотреть ациклическое дерево все тасок
+    id 'java'
+
+    //подключаем плагин war, чтобы собирать war файлы
+    id 'war'
+
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -80,6 +89,8 @@ dependencies {
     //теперь нет необходимости определять версии зависимостей. Т.к. они входят в зависимость внедренную выше,
     //то и версии этих зависимостей будут браться оттуда же
     implementation 'org.springframework.cloud:spring-cloud-commons'
+
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 }
 
 sourceSets {
@@ -278,3 +289,15 @@ task copyAllDependencies(type: Copy) {
 }
 //и делаем таску jar зависимой от нашей таски
 jar.dependsOn copyAllDependencies
+
+war {
+    archiveBaseName = "hello"
+    archiveExtension = "war"
+}
+
+task deployTomcat(type: Copy) {
+    from(war.archiveFile.get())
+    into("C:/Program Files/Apache Software Foundation/Tomcat 10.1.9/webapps")
+}
+deployTomcat.dependsOn war
+assemble.dependsOn deployTomcat
