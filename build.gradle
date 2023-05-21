@@ -90,7 +90,6 @@ dependencies {
     //то и версии этих зависимостей будут браться оттуда же
     implementation 'org.springframework.cloud:spring-cloud-commons'
 
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 }
 
 sourceSets {
@@ -290,14 +289,12 @@ task copyAllDependencies(type: Copy) {
 //и делаем таску jar зависимой от нашей таски
 jar.dependsOn copyAllDependencies
 
-war {
-    archiveBaseName = "hello"
-    archiveExtension = "war"
-}
 
-task deployTomcat(type: Copy) {
-    from(war.archiveFile.get())
-    into("C:/Program Files/Apache Software Foundation/Tomcat 10.1.9/webapps")
+//установка общих настроек для всех проектов
+allprojects {
+    //устанавливаем один репозиторий для всех проектов
+    //теперь из других build.gradle файлов можно удалить установку репозитория
+    repositories {
+        mavenCentral()
+    }
 }
-deployTomcat.dependsOn war
-assemble.dependsOn deployTomcat

@@ -13,3 +13,12 @@ println ""
 println "current settings file: ${toString()}"
 println "current settings file dir: ${settings.getSettingsDir()}"
 println "gradle hasCode: ${gradle.hashCode()}"
+
+
+include 'database'
+include 'service'
+include 'web'
+include 'common'
+include 'common:core'
+include 'common:util'
+
