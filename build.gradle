@@ -288,3 +288,13 @@ task copyAllDependencies(type: Copy) {
 }
 //и делаем таску jar зависимой от нашей таски
 jar.dependsOn copyAllDependencies
+
+
+//установка общих настроек для всех проектов
+allprojects {
+    //устанавливаем один репозиторий для всех проектов
+    //теперь из других build.gradle файлов можно удалить установку репозитория
+    repositories {
+        mavenCentral()
+    }
+}

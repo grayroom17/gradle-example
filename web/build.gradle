@@ -3,10 +3,6 @@ plugins {
     id 'war'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(':service')
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
