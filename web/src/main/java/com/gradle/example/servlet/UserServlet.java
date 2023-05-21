@@ -1,4 +1,4 @@
-package com.gradle.servlet;
+package com.gradle.example.servlet;
 
 import com.gradle.example.service.UserService;
 import jakarta.servlet.annotation.WebServlet;

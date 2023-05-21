@@ -8,6 +8,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(':service')
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -15,3 +17,15 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+war {
+    archiveBaseName = "hello"
+    archiveExtension = "war"
+}
+
+task deployTomcat(type: Copy) {
+    from(war.archiveFile.get())
+    into("C:/Program Files/Apache Software Foundation/Tomcat 10.1.9/webapps")
+}
+deployTomcat.dependsOn war
+assemble.dependsOn deployTomcat
