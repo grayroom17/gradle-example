@@ -1,7 +1,12 @@
+import com.gradle.example.plugin.CustomPlugin
+
 plugins {
     id 'java-library'
     id 'jacoco'
+    id 'custom-plugin'
 }
+
+//apply plugin: CustomPlugin
 
 dependencies {
     api project(':database')
