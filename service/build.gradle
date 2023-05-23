@@ -1,13 +1,32 @@
+import com.gradle.example.plugin.CustomPlugin
+import com.gradle.example.task.ReleaseTask
+
 plugins {
     id 'java-library'
+    id 'jacoco'
+    id 'custom-plugin'
 }
+
+//apply plugin: CustomPlugin
 
 dependencies {
     api project(':database')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 test {
     useJUnitPlatform()
+    maxParallelForks 3
+}
+test.finalizedBy jacocoTestReport
+jacocoTestReport.dependsOn test
+
+ext{
+    release  = true
+}
+
+task makeRelease(type: ReleaseTask){
+    release = project.release
+    releaseFile = new File("$rootDir/myscript.gradle")
 }
