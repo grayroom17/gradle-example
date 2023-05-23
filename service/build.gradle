@@ -1,4 +1,5 @@
 import com.gradle.example.plugin.CustomPlugin
+import com.gradle.example.task.ReleaseTask
 
 plugins {
     id 'java-library'
@@ -20,3 +21,12 @@ test {
 }
 test.finalizedBy jacocoTestReport
 jacocoTestReport.dependsOn test
+
+ext{
+    release  = true
+}
+
+task makeRelease(type: ReleaseTask){
+    release = project.release
+    releaseFile = new File("$rootDir/myscript.gradle")
+}
